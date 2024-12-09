@@ -1,6 +1,6 @@
 # Buffers.jl
   
-  [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://fkfest.github.io/Buffers.jl)
+  [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://fkfest.github.io/Buffers.jl/dev)
 
 Buffers.jl is a Julia package that provides efficient and flexible buffer management for various data types. It is designed to handle dynamic data storage needs, offering functionalities such as resizing, appending, and accessing elements with minimal overhead. This package is ideal for applications requiring high-performance data manipulation and storage solutions.
 
@@ -60,4 +60,4 @@ reset!(buffer) # To clear all tensors from the buffer
 
 You can also use the `neuralyze` function to remove aliasing information from tensors allocated in the buffer. This is useful in advanced scenarios where you need to ensure tensors are treated as independent.
 
-For more information on how to use Buffers.jl, please refer to the [documentation](https://fkfest.github.io/Buffers.jl).
+For more information on how to use Buffers.jl, please refer to the [documentation](https://fkfest.github.io/Buffers.jl/dev).
