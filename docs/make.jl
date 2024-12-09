@@ -34,5 +34,5 @@ makedocs(
   checkdocs=:exports)
 
 deploydocs(
-    repo = "github.com/fkfest/Buffers.git",
+    repo = "github.com/fkfest/Buffers.jl.git",
 )
