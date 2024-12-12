@@ -13,10 +13,10 @@ If the buffer is used with [`reshape_buf!`](@ref), the offset is set to zero.
 struct Buffer{T}
   data::Vector{T}
   offset::Ref{Int}
-  function Buffer{T}(len; extend=true) where T
-    data = Vector{T}(undef, len+1)
+  function Buffer{T}(len; extend=true) where {T}
+    data = Vector{T}(undef, len + 1)
     data[1] = extend ? one(T) : zero(T)
-    new(data, 1)
+    return new(data, 1)
   end
 end
 
@@ -34,6 +34,7 @@ end
 
 function set_extendable!(buf::Buffer, extend::Bool=true)
   buf.data[1] = extend ? one(eltype(buf.data)) : zero(eltype(buf.data))
+  return
 end
 
 function alloc!(buf::Buffer{T}, dims...) where {T}
@@ -54,16 +55,17 @@ end
 
 function drop!(buf::Buffer, tensor::AbstractArray...)
   # order tensor from last to first
-  order = sortperm([pointer(t) for t in tensor], rev=true)
+  order = sortperm([pointer(t) for t in tensor]; rev=true)
   for i in order
     len = length(tensor[i])
-    @assert pointer(tensor[i]) == pointer(buf.data, buf.offset[]-len+1) "Tensor must be the last allocated!"
+    @assert pointer(tensor[i]) == pointer(buf.data, buf.offset[] - len + 1) "Tensor must be the last allocated!"
     buf.offset[] -= len
   end
 end
 
 function reset!(buf::Buffer{T}) where {T}
   buf.offset[] = 1
+  return
 end
 
 function reshape_buf!(buf::Buffer{T}, dims...; offset=0) where {T}

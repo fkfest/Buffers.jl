@@ -59,7 +59,7 @@ macro print_buffer_usage(buf1, buf2, buf3, buf4, ex)
   end
 end
 
-is_expr(ex, head::Symbol) = Meta.isexpr(ex,head)
+is_expr(ex, head::Symbol) = Meta.isexpr(ex, head)
 
 function _print_buffer_usage(ex, bufs::Symbol...)
   print("# Function to calculate length for buffer(s)")
@@ -71,6 +71,7 @@ function _print_buffer_usage(ex, bufs::Symbol...)
   println("=============================================")
   display(_peak_buffer_usage(ex, bufs))
   println("=============================================")
+  return
 end
 
 function _peak_buffer_usage(ex, bufs)
@@ -133,7 +134,7 @@ function _buffer_usage(ex, bufs)
       buf = ex.args[2]
       return Expr(:call, :pseudo_reset!, Symbol("len$buf"))
     end
-  elseif is_expr(ex, :if) || is_expr(ex, :elseif) 
+  elseif is_expr(ex, :if) || is_expr(ex, :elseif)
     arg = _buffer_usage(ex.args[2], bufs)
     if length(ex.args) == 3
       arg2 = _buffer_usage(ex.args[3], bufs)
@@ -141,7 +142,7 @@ function _buffer_usage(ex, bufs)
         return Expr(ex.head, ex.args[1], arg, arg2)
       end
     end
-    if !isnothing(arg) 
+    if !isnothing(arg)
       return Expr(ex.head, ex.args[1], arg)
     end
   else
@@ -171,7 +172,7 @@ function _bu_replace_alloc(ex)
   end
   buf = ex.args[2]
   return Expr(:call, :pseudo_alloc!, Symbol("len$buf"), Symbol("peak$buf"), len)
-end  
+end
 
 """
     pseudo_alloc!(lenbuf, peakbuf, len)
