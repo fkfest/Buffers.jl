@@ -166,7 +166,7 @@ julia> @tensor An[i,j,k] = B[i,j,l] * C[l,k]
 """
 function neuralyze(tensor::AbstractArray)
   @assert iscontiguous_tensor(tensor) "Tensor must be contiguous!"
-  return unsafe_wrap(Array, pointer(tensor), size(tensor), own=false)
+  return unsafe_wrap(Array, pointer(tensor), size(tensor); own=false)
 end
 
 """
@@ -178,7 +178,8 @@ end
 """
 function iscontiguous_tensor(tensor::AbstractArray)
   vtensor = vec(tensor)
-  return (pointer(@view vtensor[end]) - pointer(vtensor))/sizeof(eltype(vtensor)) == length(vtensor) - 1
+  return (pointer(@view vtensor[end]) - pointer(vtensor)) / sizeof(eltype(vtensor)) ==
+         length(vtensor) - 1
 end
 
 """

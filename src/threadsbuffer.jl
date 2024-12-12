@@ -25,16 +25,19 @@ julia> Threads.@threads for k = 1:20
           reset!(tbuf)
         end
 ```
-""" 
+"""
 struct ThreadsBuffer{T}
-    buffers::Vector{Buffer{T}}
-    pool::Vector{Int}
-    condition::Threads.Condition
-    id::Symbol
+  buffers::Vector{Buffer{T}}
+  pool::Vector{Int}
+  condition::Threads.Condition
+  id::Symbol
+  function ThreadsBuffer{T}(buffers::Vector{Buffer{T}}) where {T}
+    return new(buffers, [1:length(buffers);], Threads.Condition(), gensym(:tbuffer))
+  end
 end
 
-function ThreadsBuffer{T}(len::Int, n::Int=Threads.nthreads()) where T
-  ThreadsBuffer{T}([Buffer{T}(len) for _ in 1:n], [1:n;], Threads.Condition(), gensym(:tbuffer))
+function ThreadsBuffer{T}(len::Int, n::Int=Threads.nthreads()) where {T}
+  return ThreadsBuffer{T}([Buffer{T}(len) for _ in 1:n])
 end
 ThreadsBuffer(len::Int, n::Int=Threads.nthreads()) = ThreadsBuffer{Float64}(len, n)
 
@@ -84,19 +87,20 @@ end
 
 function set_extendable!(buf::ThreadsBuffer, extend::Bool=true)
   set_extendable!(current_buffer(buf), extend)
+  return
 end
 
 function alloc!(buf::ThreadsBuffer{T}, dims...) where {T}
-  return alloc!(current_buffer(buf), dims...) 
+  return alloc!(current_buffer(buf), dims...)
 end
 
 function drop!(buf::ThreadsBuffer, tensor::AbstractArray...)
-  drop!(current_buffer(buf), tensor...)
+  return drop!(current_buffer(buf), tensor...)
 end
 
 function reset!(buf::ThreadsBuffer{T}) where {T}
   reset!(current_buffer(buf))
-  release!(buf)
+  return release!(buf)
 end
 
 """
@@ -111,6 +115,7 @@ function release!(buf::ThreadsBuffer)
     delete!(task_local_storage(), buf.id)
     notify(buf.condition)
   end
+  return
 end
 
 """
