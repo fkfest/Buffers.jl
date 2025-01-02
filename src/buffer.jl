@@ -12,11 +12,11 @@ If the buffer is used with [`reshape_buf!`](@ref), the offset is set to zero.
 """
 struct Buffer{T}
   data::Vector{T}
-  offset::Ref{Int}
+  offset::Base.RefValue{Int}
   function Buffer{T}(len; extend=true) where {T}
     data = Vector{T}(undef, len + 1)
     data[1] = extend ? one(T) : zero(T)
-    return new(data, 1)
+    return new(data, Ref(1))
   end
 end
 

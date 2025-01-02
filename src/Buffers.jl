@@ -25,6 +25,8 @@ i.e., neuralyze the tensor only after all necessary allocations are done.
 """
 module Buffers
 
+using PrecompileTools
+
 export Buffer, ThreadsBuffer
 export alloc!, drop!, reset!, repair!
 export reshape_buf!
@@ -211,6 +213,45 @@ function with_buffer(f::Function, buf::ThreadsBuffer)
     f(b)
   finally
     reset!(buf)
+  end
+end
+
+@setup_workload begin
+  @compile_workload begin
+    buf = Buffer(100)
+    A = alloc!(buf, 2)
+    B = alloc!(buf, 2, 2)
+    C = alloc!(buf, 2, 2, 2)
+    D = alloc!(buf, 2, 2, 2, 2)
+    drop!(buf, D)
+    drop!(buf, B, C)
+    len = used(buf)
+    n!A = neuralyze(A)
+    reset!(buf)
+    A = reshape_buf!(buf, 2)
+    B = reshape_buf!(buf, 2, 2)
+    C = reshape_buf!(buf, 2, 2, 2)
+    D = reshape_buf!(buf, 2, 2, 2, 2)
+    reset!(buf)
+    tbuf = ThreadsBuffer(100)
+    @sync for i in 1:2
+      Threads.@spawn begin
+        A = alloc!(tbuf, 2)
+        B = alloc!(tbuf, 2, 2)
+        C = alloc!(tbuf, 2, 2, 2)
+        D = alloc!(tbuf, 2, 2, 2, 2)
+        drop!(tbuf, D)
+        drop!(tbuf, B, C)
+        len = used(tbuf)
+        n!A = neuralyze(A)
+        reset!(tbuf)
+        A = reshape_buf!(tbuf, 2)
+        B = reshape_buf!(tbuf, 2, 2)
+        C = reshape_buf!(tbuf, 2, 2, 2)
+        D = reshape_buf!(tbuf, 2, 2, 2, 2)
+        reset!(tbuf)
+      end
+    end
   end
 end
 

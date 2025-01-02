@@ -1,14 +1,14 @@
 # Release notes
 
-## Unreleased
-
-### Breaking
-
-### Changed
+## Version [v0.1.2] - 2025.01.02
 
 ### Added
 
+* Add precompilation using `PrecompileTools`.
+
 ### Fixed
+
+* Fix type stability (`::Ref{Int}` --> `::Base.RefValue{Int}`).
 
 ## Version [v0.1.1] - 2024.12.12
 
