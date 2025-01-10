@@ -56,7 +56,7 @@ Return the index of the buffer of the current thread.
 If the buffer is not available, wait until it is released.
 """
 function current_buffer_index(buf::ThreadsBuffer)
-  get!(task_local_storage(), buf.id) do
+  index::Int = get!(task_local_storage(), buf.id) do
     lock(buf.condition) do
       while isempty(buf.pool)
         wait(buf.condition)
@@ -64,6 +64,7 @@ function current_buffer_index(buf::ThreadsBuffer)
       return pop!(buf.pool)
     end
   end
+  return index
 end
 
 """
