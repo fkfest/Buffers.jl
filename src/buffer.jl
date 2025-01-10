@@ -54,8 +54,8 @@ function alloc!(buf::Buffer{T}, dims...) where {T}
 end
 
 function drop!(buf::Buffer, tensor::AbstractArray...)
-  # order tensor from last to first
-  order = sortperm([pointer(t) for t in tensor]; rev=true)
+  # order tensor from last to first (and if they have the same pointer, from largest to smallest)
+  order = sortperm([(pointer(t)=>length(t)) for t in tensor]; rev=true)
   for i in order
     len = length(tensor[i])
     @assert pointer(tensor[i]) == pointer(buf.data, buf.offset[] - len + 1) "Tensor must be the last allocated!"
