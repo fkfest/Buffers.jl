@@ -1,7 +1,7 @@
 name = "Buffers"
 uuid = "d9ae4b7f-d04c-4b7f-92f7-4d9c2e17e1a4"
 authors = ["Daniel Kats <d.kats@fkf.mpg.de>"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"

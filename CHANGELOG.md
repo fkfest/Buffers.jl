@@ -4,8 +4,8 @@
 
 ### Fixed
 
-* Fix type stability in `ThreadsBuffer`
-
+* Fix type stability in `ThreadsBuffer`.
+* Fix errors associated with zero-sized tensors.
 
 ## Version [v0.1.2] - 2025.01.02
 

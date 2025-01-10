@@ -180,7 +180,8 @@ end
 """
 function iscontiguous_tensor(tensor::AbstractArray)
   vtensor = vec(tensor)
-  return (pointer(@view vtensor[end]) - pointer(vtensor)) / sizeof(eltype(vtensor)) ==
+  return length(vtensor) == 0 || 
+         (pointer(@view vtensor[end]) - pointer(vtensor)) / sizeof(eltype(vtensor)) ==
          length(vtensor) - 1
 end
 
