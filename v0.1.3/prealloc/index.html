@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Preallocation · Buffers.jl documentation</title><meta name="title" content="Preallocation · Buffers.jl documentation"/><meta property="og:title" content="Preallocation · Buffers.jl documentation"/><meta property="twitter:title" content="Preallocation · Buffers.jl documentation"/><meta name="description" content="Documentation for Buffers.jl documentation."/><meta property="og:description" content="Documentation for Buffers.jl documentation."/><meta property="twitter:description" content="Documentation for Buffers.jl documentation."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">Buffers.jl documentation</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../guide/">Guide</a></li><li class="is-active"><a class="tocitem" href>Preallocation</a><ul class="internal"><li><a class="tocitem" href="#Usage"><span>Usage</span></a></li></ul></li><li><a class="tocitem" href="../tensor_contractions/">Tensor contractions</a></li></ul></li><li><span class="tocitem">Internals</span><ul><li><a class="tocitem" href="../buffers/">Buffers</a></li></ul></li><li><a class="tocitem" href="../release-notes/">Release notes</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Preallocation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Preallocation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/fkfest/Buffers.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/fkfest/Buffers.jl/blob/main/docs/src/prealloc.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Preallocating-Buffers-with-@print_buffer_usage"><a class="docs-heading-anchor" href="#Preallocating-Buffers-with-@print_buffer_usage">Preallocating Buffers with <code>@print_buffer_usage</code></a><a id="Preallocating-Buffers-with-@print_buffer_usage-1"></a><a class="docs-heading-anchor-permalink" href="#Preallocating-Buffers-with-@print_buffer_usage" title="Permalink"></a></h1><p>The <code>@print_buffer_usage</code> macro in Buffers.jl is a useful tool for determining the memory requirements of a buffer within a given block of code. This allows you to preallocate the buffer with the appropriate size, ensuring efficient memory usage and avoiding unnecessary reallocations.</p><h2 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h2><p>To use the <code>@print_buffer_usage</code> macro, simply wrap your code block with the macro and specify the buffer(s) you want to analyze. The macro will print the function body to determine the peak memory usage of the buffer(s) within the code block.</p><h3 id="Example"><a class="docs-heading-anchor" href="#Example">Example</a><a id="Example-1"></a><a class="docs-heading-anchor-permalink" href="#Example" title="Permalink"></a></h3><pre><code class="language-julia hljs">using Buffers
+
+buf = Buffer(100000)
+@print_buffer_usage buf begin
+  if small
+    A = alloc!(buf, 10, 10, 20)
+  else
+    A = alloc!(buf, 10, 10, 30)
+  end
+  B = alloc!(buf, 10, 10, 10)
+  if small
+    C = alloc!(buf, 10, 20)
+  else
+    C = alloc!(buf, 10, 30)
+  end
+  rand!(B)
+  rand!(C)
+  An = neuralyze(A)
+  @tensor An[i,j,k] = B[i,j,l] * C[l,k]
+  drop!(buf, B, C)
+  reset!(buf)
+end</code></pre><p>In this example, the <code>@print_buffer_usage</code> macro will analyze the memory usage of the buffer <code>buf</code> within the code block and print the body of the function which can be used to preallocate the buffer with the appropriate size based on the peak memory usage. All function calls with the buffer <code>buf</code> will be replaced with <code>pseudo_&lt;function-name&gt;</code>. The <code>pseudo_alloc!</code>, <code>pseudo_drop!</code>, and <code>pseudo_reset!</code> functions are predefined, and you have to define your own <code>pseudo_</code>functions if necessary.</p><pre><code class="language-julia hljs"># Function to calculate length for buffer(s) buf
+# autogenerated by @print_buffer_usage
+=============================================
+quote
+    buf = [0, 0]
+    if small
+        A = pseudo_alloc!(buf, 10, 10, 20)
+    else
+        A = pseudo_alloc!(buf, 10, 10, 30)
+    end
+    B = pseudo_alloc!(buf, 10, 10, 10)
+    if small
+        C = pseudo_alloc!(buf, 10, 20)
+    else
+        C = pseudo_alloc!(buf, 10, 30)
+    end
+    pseudo_drop!(buf, B, C)
+    pseudo_reset!(buf)
+    return buf[2]
+end
+=============================================</code></pre><p>Wrap the autogenerated function body to a function and use it to preallocate the buffer with the correct size.</p><pre><code class="language-julia hljs">function preallocate_buffer(small)
+    buf = [0, 0]
+    if small
+        A = pseudo_alloc!(buf, 10, 10, 20)
+    else
+        A = pseudo_alloc!(buf, 10, 10, 30)
+    end
+    B = pseudo_alloc!(buf, 10, 10, 10)
+    if small
+        C = pseudo_alloc!(buf, 10, 20)
+    else
+        C = pseudo_alloc!(buf, 10, 30)
+    end
+    pseudo_drop!(buf, B, C)
+    pseudo_reset!(buf)
+    return buf[2]
+end
+
+buf = Buffer(preallocate_buffer(true))</code></pre><h3 id="Multiple-Buffers"><a class="docs-heading-anchor" href="#Multiple-Buffers">Multiple Buffers</a><a id="Multiple-Buffers-1"></a><a class="docs-heading-anchor-permalink" href="#Multiple-Buffers" title="Permalink"></a></h3><p>The <code>@print_buffer_usage</code> macro can also be used with multiple buffers. Simply list the buffers you want to analyze before the code block.</p><pre><code class="language-julia hljs">using Buffers
+
+buf1 = Buffer(100000)
+buf2 = Buffer(50000)
+@print_buffer_usage buf1 buf2 begin
+    A = alloc!(buf1, 10, 10, 20)
+    B = alloc!(buf2, 20, 5)
+    rand!(A)
+    rand!(B)
+    drop!(buf1, A)
+    drop!(buf2, B)
+    reset!(buf1)
+    reset!(buf2)
+end</code></pre><p>This will print the peak memory usage for both <code>buf1</code> and <code>buf2</code>.</p><p>By using the <code>@print_buffer_usage</code> macro, you can ensure that your buffers are preallocated with the correct size, leading to more efficient memory management and improved performance in your applications.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../guide/">« Guide</a><a class="docs-footer-nextpage" href="../tensor_contractions/">Tensor contractions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 10 January 2025 13:42">Friday 10 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
