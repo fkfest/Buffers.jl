@@ -1,5 +1,12 @@
 # Release notes
 
+## Version [v0.1.3] - 2025.01.10
+
+### Fixed
+
+* Fix type stability in `ThreadsBuffer`
+
+
 ## Version [v0.1.2] - 2025.01.02
 
 ### Added
