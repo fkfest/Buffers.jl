@@ -1,5 +1,11 @@
 # Release notes
 
+## Version [v0.2.0] - 2025.02.03
+
+### Added
+
+* Add `@buffer` and `@threadsbuffer` macros (and underlying `MAllocBuffer` and `ThreadsMAllocBuffer` types) to create manually allocated buffers with the specified size and type.
+
 ## Version [v0.1.3] - 2025.01.10
 
 ### Fixed

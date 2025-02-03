@@ -10,7 +10,7 @@ arrays will never point to the same memory as the buffer.
 
 If the buffer is used with [`reshape_buf!`](@ref), the offset is set to zero.
 """
-struct Buffer{T}
+struct Buffer{T} <: AbstractBuffer
   data::Vector{T}
   offset::Base.RefValue{Int}
   function Buffer{T}(len; extend=true) where {T}
@@ -23,10 +23,6 @@ end
 Buffer(len=0) = Buffer{Float64}(len)
 
 Base.length(buf::Buffer) = length(buf.data) - 1
-
-function used(buf::Buffer)
-  return buf.offset[] - 1
-end
 
 function isextendable(buf::Buffer)
   return buf.data[1] == one(eltype(buf.data))
@@ -61,11 +57,6 @@ function drop!(buf::Buffer, tensor::AbstractArray...)
     @assert pointer(tensor[i]) == pointer(buf.data, buf.offset[] - len + 1) "Tensor must be the last allocated!"
     buf.offset[] -= len
   end
-end
-
-function reset!(buf::Buffer{T}) where {T}
-  buf.offset[] = 1
-  return
 end
 
 function reshape_buf!(buf::Buffer{T}, dims...; offset=0) where {T}

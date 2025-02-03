@@ -27,16 +27,19 @@ module Buffers
 
 using PrecompileTools
 
-export Buffer, ThreadsBuffer
-export alloc!, drop!, reset!, repair!
+export Buffer, MAllocBuffer, ThreadsBuffer, ThreadsMAllocBuffer
+export alloc!, drop!, reset!, repair!, free!
 export reshape_buf!
 export used, nbuffers, with_buffer
+export @buffer, @threadsbuffer
 export isextendable, set_extendable!
 export neuralyze
 export @print_buffer_usage
 export pseudo_alloc!, pseudo_drop!, pseudo_reset!
 
+include("abstractbuffer.jl")
 include("buffer.jl")
+include("mbuffer.jl")
 include("threadsbuffer.jl")
 include("usage.jl")
 
@@ -245,6 +248,38 @@ end
         drop!(tbuf, B, C)
         len = used(tbuf)
         n!A = neuralyze(A)
+        reset!(tbuf)
+        A = reshape_buf!(tbuf, 2)
+        B = reshape_buf!(tbuf, 2, 2)
+        C = reshape_buf!(tbuf, 2, 2, 2)
+        D = reshape_buf!(tbuf, 2, 2, 2, 2)
+        reset!(tbuf)
+      end
+    end
+    @buffer buf(100) begin
+      A = alloc!(buf, 2)
+      B = alloc!(buf, 2, 2)
+      C = alloc!(buf, 2, 2, 2)
+      D = alloc!(buf, 2, 2, 2, 2)
+      drop!(buf, D)
+      drop!(buf, B, C)
+      len = used(buf)
+      reset!(buf)
+      A = reshape_buf!(buf, 2)
+      B = reshape_buf!(buf, 2, 2)
+      C = reshape_buf!(buf, 2, 2, 2)
+      D = reshape_buf!(buf, 2, 2, 2, 2)
+      reset!(buf)
+    end
+    @threadsbuffer tbuf(100) begin
+      Threads.@threads for i in 1:2
+        A = alloc!(tbuf, 2)
+        B = alloc!(tbuf, 2, 2)
+        C = alloc!(tbuf, 2, 2, 2)
+        D = alloc!(tbuf, 2, 2, 2, 2)
+        drop!(tbuf, D)
+        drop!(tbuf, B, C)
+        len = used(tbuf)
         reset!(tbuf)
         A = reshape_buf!(tbuf, 2)
         B = reshape_buf!(tbuf, 2, 2)
