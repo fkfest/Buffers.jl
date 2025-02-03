@@ -44,4 +44,25 @@ drop!(buffer, A)
 reset!(buffer) # To clear all tensors from the buffer
 ```
 
+For multi-threaded environments, you can use `ThreadsBuffer` to create thread-safe buffers:
+
+```julia
+tbuffer = ThreadsBuffer(1000)
+```
+
+All operations on `Buffer` can be performed on `ThreadsBuffer` as well. The buffers in `ThreadsBuffer` are thread-local, allowing for concurrent allocation and deallocation of memory without data corruption.
+
+Buffers.jl also provides the `@buffer` and `@threadsbuffer` macros to create manually allocated buffers with the specified size and type. The buffer is automatically freed when the scope of the macro ends:
+
+```julia
+@buffer buf(Int, 1000) begin
+  A = alloc!(buf, 10, 10)
+  B = alloc!(buf, 10, 5)
+  A .= 0.0
+  B .= 1.0
+  drop!(buf, A)
+  drop!(buf, B)
+end
+```
+
 For more detailed usage instructions and examples, please refer to the following sections of the documentation.
