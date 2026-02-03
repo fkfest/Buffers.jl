@@ -33,8 +33,8 @@ function set_extendable!(buf::Buffer, extend::Bool=true)
   return
 end
 
-function alloc!(buf::Buffer{T}, dims...) where {T}
-  @assert buf.offset[] >= 1 "Buffer is used with reshape_buf! and must be reset!"
+ Base.@propagate_inbounds function alloc!(buf::Buffer{T}, dims...) where {T}
+  @boundscheck(@assert buf.offset[] >= 1 "Buffer is used with reshape_buf! and must be reset!")
   start = buf.offset[] + 1
   len = prod(dims)
   stop = start + len - 1
@@ -59,8 +59,8 @@ function drop!(buf::Buffer, tensor::AbstractArray...)
   end
 end
 
-function reshape_buf!(buf::Buffer{T}, dims...; offset=0) where {T}
-  @assert buf.offset[] <= 1 "Buffer is used with alloc! and must be reset!"
+Base.@propagate_inbounds function reshape_buf!(buf::Buffer{T}, dims...; offset=0) where {T}
+  @boundscheck(@assert buf.offset[] <= 1 "Buffer is used with alloc! and must be reset!")
   buf.offset[] = 0
   len = prod(dims)
   start = offset + 2

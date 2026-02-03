@@ -1,5 +1,12 @@
 # Release notes
 
+## Version [v0.2.1] - 2026.02.03
+
+### Fixed
+
+* Improve type stability in `ThreadsMAllocBuffer`.
+* Add @boundscheck and @inline to various functions to improve performance.
+
 ## Version [v0.2.0] - 2025.02.03
 
 ### Added

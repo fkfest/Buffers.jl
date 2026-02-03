@@ -67,12 +67,14 @@ function set_extendable!(buf::MAllocBuffer, extend::Bool=true)
   return
 end
 
-function alloc!(buf::MAllocBuffer{T}, dims...) where {T}
-  @assert buf.offset[] >= 1 "Buffer is used with reshape_buf! and must be reset!"
+Base.@propagate_inbounds function alloc!(buf::MAllocBuffer{T}, dims...) where {T}
+  @boundscheck(@assert buf.offset[] >= 1 "Buffer is used with reshape_buf! and must be reset!")
   start = buf.offset[] 
   len = prod(dims)
-  if start + len > buf.data_length
-    error("Buffer overflow!")
+  @boundscheck begin
+    if start + len > buf.data_length
+      error("Buffer overflow!")
+    end
   end
   buf.offset[] += len
   return unsafe_wrap(Array, buf.data + start*sizeof(T), dims; own=false)
@@ -88,13 +90,15 @@ function drop!(buf::MAllocBuffer{T}, tensor::AbstractArray...) where {T}
   end
 end
 
-function reshape_buf!(buf::MAllocBuffer{T}, dims...; offset=0) where {T}
-  @assert buf.offset[] <= 1 "Buffer is used with alloc! and must be reset!"
+Base.@propagate_inbounds function reshape_buf!(buf::MAllocBuffer{T}, dims...; offset=0) where {T}
+  @boundscheck(@assert buf.offset[] <= 1 "Buffer is used with alloc! and must be reset!")
   buf.offset[] = 0
   len = prod(dims)
   start = offset + 1
-  if start + len > buf.data_length
-    error("Buffer overflow!")
+  @boundscheck begin
+    if start + len > buf.data_length
+      error("Buffer overflow!")
+    end
   end
   return unsafe_wrap(Array, buf.data + start*sizeof(T), dims; own=false)
 end
@@ -126,10 +130,13 @@ end
 macro buffer(specs, ex)
   buf, T, len = _parse_specs(specs)
   quote
-    $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
-    $(esc(ex))
-    free!($(esc(buf)))
-    $(esc(buf)) = nothing
+    let $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
+      try
+        $(esc(ex))
+      finally
+        free!($(esc(buf)))
+      end
+    end
   end
 end
 
@@ -143,13 +150,15 @@ macro buffer(specs, specs2, ex)
   buf, T, len = _parse_specs(specs)
   buf2, T2, len2 = _parse_specs(specs2)
   quote
-    $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
-    $(esc(buf2)) = MAllocBuffer{$(esc(T2))}($(esc(len2)))
-    $(esc(ex))
-    free!($(esc(buf2)))
-    free!($(esc(buf)))
-    $(esc(buf2)) = nothing
-    $(esc(buf)) = nothing
+    let $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len))),
+        $(esc(buf2)) = MAllocBuffer{$(esc(T2))}($(esc(len2)))
+      try
+        $(esc(ex))
+      finally
+        free!($(esc(buf2)))
+        free!($(esc(buf)))
+      end
+    end
   end
 end
 
@@ -164,7 +173,7 @@ function _parse_specs(specs)
     T = specs.args[2]
     len = specs.args[3]
   else
-    "Invalid buffer specification!"
+    error("Invalid buffer specification!")
   end
   return name, T, len
 end

@@ -1,4 +1,3 @@
-
 abstract type AbstractThreadsBuffer end
 
 """
@@ -137,7 +136,7 @@ Return the buffer of the current thread.
 
 If the buffer is not available, wait until it is released.
 """
-function current_buffer(buf::AbstractThreadsBuffer)
+@inline function current_buffer(buf::AbstractThreadsBuffer)
   return buf.buffers[current_buffer_index(buf)]
 end
 
@@ -154,7 +153,7 @@ function set_extendable!(buf::AbstractThreadsBuffer, extend::Bool=true)
   return
 end
 
-function alloc!(buf::AbstractThreadsBuffer, dims...)
+@inline function alloc!(buf::AbstractThreadsBuffer, dims...)
   return alloc!(current_buffer(buf), dims...)
 end
 
@@ -193,8 +192,13 @@ if the buffers were not released properly.
 function repair!(buf::AbstractThreadsBuffer)
   for i in 1:nbuffers(buf)
     reset!(buf.buffers[i])
-    push!(buf.pool, i)
   end
+  lock(buf.condition) do
+    resize!(buf.pool, nbuffers(buf))
+    buf.pool .= [1:nbuffers(buf);]
+    notify(buf.condition)
+  end
+  return
 end
 
 function reshape_buf!(buf::AbstractThreadsBuffer, dims...; offset=0)
@@ -214,10 +218,13 @@ The specifications `specs` can be:
 macro threadsbuffer(specs, ex)
   buf, T, len, n = _parse_specs_tb(specs)
   quote
-    $(esc(buf)) = ThreadsMAllocBuffer{$(esc(T))}($(esc(len)), $(esc(n)))
-    $(esc(ex))
-    free!($(esc(buf)))
-    $(esc(buf)) = nothing
+    let $(esc(buf)) = ThreadsMAllocBuffer{$(esc(T))}($(esc(len)), $(esc(n)))
+      try
+        $(esc(ex))
+      finally
+        free!($(esc(buf)))
+      end
+    end
   end
 end
 
@@ -230,13 +237,15 @@ macro threadsbuffer(specs, specs2, ex)
   buf, T, len, n = _parse_specs_tb(specs)
   buf2, T2, len2, n2 = _parse_specs_tb(specs2)
   quote
-    $(esc(buf)) = ThreadsMAllocBuffer{$(esc(T))}($(esc(len)), $(esc(n)))
-    $(esc(buf2)) = ThreadsMAllocBuffer{$(esc(T2))}($(esc(len2)), $(esc(n2)))
-    $(esc(ex))
-    free!($(esc(buf2)))
-    free!($(esc(buf)))
-    $(esc(buf2)) = nothing
-    $(esc(buf)) = nothing
+    let $(esc(buf)) = ThreadsMAllocBuffer{$(esc(T))}($(esc(len)), $(esc(n))),
+        $(esc(buf2)) = ThreadsMAllocBuffer{$(esc(T2))}($(esc(len2)), $(esc(n2)))
+      try
+        $(esc(ex))
+      finally
+        free!($(esc(buf2)))
+        free!($(esc(buf)))
+      end
+    end
   end
 end
 
@@ -258,7 +267,7 @@ function _parse_specs_tb(specs)
     len = specs.args[3]
     n = specs.args[4]
   else
-    "Invalid buffer specification!"
+    error("Invalid buffer specification!")
   end
   return name, T, len, n
 end

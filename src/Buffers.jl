@@ -77,7 +77,7 @@ julia> An = neuralyze(A) # tensor without origin
 julia> @tensor An[i,j,k] = B[i,j,l] * C[l,k]
 ```
 """
-function alloc!(buf, dims...; extend=true) end
+function alloc! end
 
 """
     drop!(buf, tensor...)
@@ -87,7 +87,7 @@ function alloc!(buf, dims...; extend=true) end
   Only last tensors can be dropped.
   For `ThreadsBuffer`, drop tensors from the buffer of the current thread.
 """
-function drop!(buf, tensor...) end
+function drop! end
 
 """
     reset!(buf)
@@ -95,7 +95,7 @@ function drop!(buf, tensor...) end
   Reset buffer `buf` to the initial state.
   For `ThreadsBuffer`, reset the buffer of the current thread and release it.
 """
-function reset!(buf) end
+function reset! end
 
 """
     reshape_buf!(buf, dims...; offset=0, extend=true)
@@ -121,21 +121,21 @@ julia> C = rand(10,20)
 julia> @tensor A[i,j,k] = B[i,j,l] * C[l,k]
 ```
 """
-function reshape_buf!(buf, dims...; offset=0, extend=true) end
+function reshape_buf! end
 
 """
     isextendable(buf)
 
   Check if buffer `buf` is extendable.
 """
-function isextendable(buf) end
+function isextendable end
 
 """
     set_extendable!(buf, extend=true)
 
   Set buffer `buf` to be extendable or not.
 """
-function set_extendable!(buf, extend=true) end
+function set_extendable! end
 
 """
     neuralyze(tensor::AbstractArray)
