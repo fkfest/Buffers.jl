@@ -130,13 +130,10 @@ end
 macro buffer(specs, ex)
   buf, T, len = _parse_specs(specs)
   quote
-    let $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
-      try
-        $(esc(ex))
-      finally
-        free!($(esc(buf)))
-      end
-    end
+    $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
+    $(esc(ex))
+    free!($(esc(buf)))
+    $(esc(buf)) = nothing
   end
 end
 
@@ -150,15 +147,13 @@ macro buffer(specs, specs2, ex)
   buf, T, len = _parse_specs(specs)
   buf2, T2, len2 = _parse_specs(specs2)
   quote
-    let $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len))),
-        $(esc(buf2)) = MAllocBuffer{$(esc(T2))}($(esc(len2)))
-      try
-        $(esc(ex))
-      finally
-        free!($(esc(buf2)))
-        free!($(esc(buf)))
-      end
-    end
+    $(esc(buf)) = MAllocBuffer{$(esc(T))}($(esc(len)))
+    $(esc(buf2)) = MAllocBuffer{$(esc(T2))}($(esc(len2)))
+    $(esc(ex))
+    free!($(esc(buf2)))
+    free!($(esc(buf)))
+    $(esc(buf2)) = nothing
+    $(esc(buf)) = nothing
   end
 end
 
