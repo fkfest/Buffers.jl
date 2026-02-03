@@ -1,5 +1,11 @@
 # Release notes
 
+## Version [v0.2.2] - 2026.02.03
+
+### Fixed
+
+* Revert changes in `@buffer` macro that introduced scope issues (i.e., let and try blocks).
+
 ## Version [v0.2.1] - 2026.02.03
 
 ### Fixed
